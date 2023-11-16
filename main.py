@@ -40,7 +40,6 @@ def Get_Albumid(track_list,spotify):
   album_list = []
   for trackid in track_list:
     album_info = spotify.track(trackid)
-    #print(album_info)
     album_list.append(album_info['album']['id'])
   return album_list
 
@@ -49,9 +48,7 @@ def Get_Trackid_from_albumid(album_list_from_trackid,spotify):
   track_list = []
   for albumid_items in album_list_from_trackid:
     track_info = spotify.album_tracks(albumid_items)
-    #print(track_info)
     for item in track_info['items']:
-      print(item['id'])
       track_list.append(item['id'])
   return track_list
 
