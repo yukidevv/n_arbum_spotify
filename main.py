@@ -22,15 +22,15 @@ def main():
   
   #TrackID(1曲分のみ)→AlbumID→TrackID→プレイリスト
   #TrackIDからAlbumIDを特定。特定したAlbumIDからTrackID(複数)を取得してその数分プレイリストに突っ込む
-  track_list_from_file = Get_Trackid()
+  track_list_from_file = Get_Trackid(date)
   album_list_from_trackid = Get_Albumid(track_list_from_file,spotify)
   track_list_from_albumid = Get_Trackid_from_albumid(album_list_from_trackid,spotify)
   make_play_list(username,spotify,date,track_list_from_albumid)
 
 #FileからTrackIDのリストを取得
-def Get_Trackid():
+def Get_Trackid(date):
   track_list = []
-  with open('./yyyymmdd') as f:
+  with open('data/' + date) as f:
     for line in f:
       track_list.append(line.replace("spotify:track:",'').strip())
   return track_list
