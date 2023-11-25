@@ -7,6 +7,7 @@ import datetime
 import os
 
 def main():
+  #デバッグ
   DEBUG = os.getenv("DEBUG", None) is not None
 
   value = ReadAuthInfo() # Read clientID,Client Secret
@@ -25,13 +26,11 @@ def main():
   
   #TrackID(1曲分のみ)→AlbumID→TrackID→プレイリスト
   #TrackIDからAlbumIDを特定。特定したAlbumIDからTrackID(複数)を取得してその数分プレイリストに突っ込む
-  
   track_list_from_file = GetTrackId(date)
   album_list_from_trackid = GetAlbumId(track_list_from_file,spotify)
   track_list_from_albumid = GetTrackIdFromAlbumId(album_list_from_trackid,spotify)
   if not DEBUG :
     MakePlayList(username,spotify,date,track_list_from_albumid)
-
 #FileからTrackIDのリストを取得
 def GetTrackId(date):
   track_list = []
@@ -55,18 +54,24 @@ def GetTrackIdFromAlbumId(album_list_from_trackid,spotify):
     track_info = spotify.album_tracks(albumid_items)
     for item in track_info['items']:
       track_list.append(item['id'])
-  #CreateLog(track_list)
+  CreateLog(track_list)
   return track_list
 
 #取得したTrackID全てを新規作成したプレイリストに突っ込む
 def MakePlayList(username,spotify,date,track_list_from_albumid):
   play_list_info = spotify.user_playlist_create(username,date)
   play_list_id = play_list_info['id']
-  spotify.user_playlist_add_tracks(username,play_list_id,track_list_from_albumid)
+  #上限が100リクエストまでなので100件ずつ区切って処理を行う
+  while track_list_from_albumid:
+    spotify.user_playlist_add_tracks(username,play_list_id,track_list_from_albumid[:100])
+    track_list_from_albumid = track_list_from_albumid[100:]
 
-#TODO
-#def CreateLog(track_list):
-  
+#追加した楽曲を記憶し、ファイルに書き出ししておく
+def CreateLog(track_list):
+  with open('data/out/log', mode = 'w') as f:
+    for track in track_list:
+      f.write("spotify:track:" + track + "\r\n")
+
 #認証情報の取得
 def ReadAuthInfo():
   with open('./secret') as f:
