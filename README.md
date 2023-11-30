@@ -18,11 +18,18 @@ TrackID(上記AlbumIDに含まれる全楽曲のTrackIDを取得)
 ```
 username:client_id:client_secret
 ```
-- スクリプト使用法  
+# スクリプト使用法  
+- 基本的な使い方   
 以下のサイトから取得したい楽曲のTrack情報を取得する。  
-https://everynoise.com/new_releases_by_genre.cgi?genre=local&region=JP
+https://everynoise.com/new_releases_by_genre.cgi?genre=local&region=JP  
 dataフォルダ配下に実行日付を名称として(yyyymmdd)保存する。  
 その後スクリプトを実行。実行日付でSpotify上にプレイリストが作成され、楽曲が登録される。  
 ```
 ./main.py
+```
+
+- オプション  
+過去に取り込んだ楽曲全てを新規プレイリストに登録する。  
+```
+./main.py all
 ```
