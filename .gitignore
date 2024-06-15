@@ -1,3 +1,6 @@
 notes
 .cache*
 secret
+bin
+lib
+pyvenv.cfg

@@ -97,7 +97,7 @@ def GetAllTrackIdList():
 
 #認証情報の取得
 def ReadAuthInfo():
-  with open('./secret') as f:
+  with open('secret') as f:
     for line in f:
       value = line.split(":")
   return value
