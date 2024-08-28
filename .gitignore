@@ -2,5 +2,5 @@ notes
 .cache*
 secret
 bin
-lib
+lib*
 pyvenv.cfg
