@@ -6,11 +6,15 @@ import spotipy.util as util
 import datetime
 import os
 import sys
+import click
 
-def main():
+@click.command()
+@click.option('--count', default=1, help='Number of greetings.')
+def main(count):
   #デバッグ
   DEBUG = os.getenv("DEBUG", None) is not None
-
+  for x in range(count):
+    print("aaa")
   #オプション判定
   flg = option_handle() 
 
