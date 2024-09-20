@@ -10,11 +10,12 @@ import click
 
 @click.command()
 @click.option('--count', default=1, help='Number of greetings.')
-def main(count):
+@click.option('--name' , prompt='Your Name',help='The Person to great.')
+def main(count, name):
   #デバッグ
   DEBUG = os.getenv("DEBUG", None) is not None
   for x in range(count):
-    print("aaa")
+    print("hello,"+name)
   #オプション判定
   flg = option_handle() 
 
