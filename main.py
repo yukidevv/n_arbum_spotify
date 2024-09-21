@@ -8,16 +8,9 @@ import os
 import sys
 import click
 
-@click.command()
-@click.option('--count', default=1, help='Number of greetings.')
-@click.option('--name' , prompt='Your Name',help='The Person to great.')
-def main(count, name):
+def main():
   #デバッグ
   DEBUG = os.getenv("DEBUG", None) is not None
-  for x in range(count):
-    print("hello,"+name)
-  #オプション判定
-  flg = option_handle() 
 
   value = read_auth_info() # Read clientID,Client Secret
   username = value[0]
@@ -32,15 +25,15 @@ def main(count, name):
 
   date = datetime.date.today()
   date = date.strftime('%Y%m%d')
-
+  option = option_handle()
   if DEBUG:
     #sandbox
     exit()
-  #AlbumIDからTrackID(複数)を取得してその数分プレイリストに突っ込む
-  if flg == "":
+  if option == "imp":
+    #AlbumIDからTrackID(複数)を取得してその数分プレイリストに突っ込む
     album_lists = get_new_album_lists(spotify.new_releases(country='JP'))
     make_play_list(username,spotify,date,get_track_id_from_album_lists(album_lists,spotify))
-  if flg == "all":
+  elif option == "all":
     all_track_list = get_all_track_id_list()
     make_play_list(username,spotify,"All_New_Track",all_track_list)
 
@@ -70,12 +63,17 @@ def create_log(track_list):
       f.write("spotify:track:" + track + "\r\n")
 
 #オプションの判定
+@click.group()
 def option_handle():
-  args = sys.argv
-  if len(args) != 2:
-    return ""
-  if(args[1] == "all"):
-    return "all"
+  pass
+
+@option_handle.command('imp')
+def sub_new_track_import():
+  return "imp"
+
+@option_handle.command('all')
+def sub_all_new_track_import():
+  return "all"
 
 def get_all_track_id_list():
   track_list = []
