@@ -6,25 +6,16 @@ import spotipy.util as util
 import datetime
 import os
 import sys
-import click
-
-value =''
-username =''
-client_id =''
-client_secret = ''
-redirect_uri =''
-client_credentials_manager = ''
-spotify = ''
-scope = 'playlist-modify-public'
-token = ''
-spotify = ''
-date = ''
-date = ''
-option = ''
+import argparse
 
 def main():
   #デバッグ
   DEBUG = os.getenv("DEBUG", None) is not None
+
+  #コマンドライン引数
+  parser = argparse.ArgumentParser(description='Import music track for spotify.')
+  parser.add_argument('all', help='Import all previous tracks.', nargs="?", default='')
+  args = parser.parse_args()
 
   value = read_auth_info() # Read clientID,Client Secret
   username = value[0]
@@ -33,22 +24,23 @@ def main():
   redirect_uri = 'http://localhost'
   client_credentials_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
   spotify = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+  scope = 'playlist-modify-public'
   token = util.prompt_for_user_token(username,scope, client_id=client_id,client_secret=client_secret,redirect_uri=redirect_uri)
   spotify = spotipy.Spotify(auth = token)
 
   date = datetime.date.today()
   date = date.strftime('%Y%m%d')
-  option = option_handle()
+
   if DEBUG:
     #sandbox
     exit()
-  if option == "imp":
+  if args == "all":
+    all_track_list = get_all_track_id_list()
+    make_play_list(username,spotify,"All_New_Track",all_track_list)
+  else:
     #AlbumIDからTrackID(複数)を取得してその数分プレイリストに突っ込む
     album_lists = get_new_album_lists(spotify.new_releases(country='JP'))
     make_play_list(username,spotify,date,get_track_id_from_album_lists(album_lists,spotify))
-  elif option == "all":
-    all_track_list = get_all_track_id_list()
-    make_play_list(username,spotify,"All_New_Track",all_track_list)
 
 #AlbumIDからTrackID(Fileから取得したTrackIDが属するAlbumID内の全てのTrackIDを取得)
 def get_track_id_from_album_lists(album_list_from_trackid,spotify):
@@ -74,23 +66,6 @@ def create_log(track_list):
   with open('data/out/log', mode = 'a') as f:
     for track in track_list:
       f.write("spotify:track:" + track + "\r\n")
-
-#オプションの判定
-@click.group()
-def option_handle():
-  pass
-
-@option_handle.command('imp')
-def sub_new_track_import():
-  """Import new week track"""
-  #AlbumIDからTrackID(複数)を取得してその数分プレイリストに突っ込む
-  album_lists = get_new_album_lists(spotify.new_releases(country='JP'))
-  make_play_list(username,spotify,date,get_track_id_from_album_lists(album_lists,spotify))
-
-@option_handle.command('all')
-def sub_all_new_track_import():
-  """Import everything you have imported so far."""
-  return "all"
 
 def get_all_track_id_list():
   track_list = []
