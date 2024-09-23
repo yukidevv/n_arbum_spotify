@@ -19,11 +19,13 @@ username:client_id:client_secret
 - 基本的な使い方  
 最新の楽曲リストを取得し、自分のプレイリストに登録する    
 ```
-./main.py
-```
+usage: main.py [-h] [all]
 
-- オプション  
-過去に取り込んだ楽曲全てを新規プレイリストに登録する。  
-```
-./main.py all
+Import music track for spotify.
+
+positional arguments:
+  all         Import all previous tracks.
+
+options:
+  -h, --help  show this help message and exit
 ```

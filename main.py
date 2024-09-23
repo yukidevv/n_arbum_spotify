@@ -6,13 +6,16 @@ import spotipy.util as util
 import datetime
 import os
 import sys
+import argparse
 
 def main():
   #デバッグ
   DEBUG = os.getenv("DEBUG", None) is not None
 
-  #オプション判定
-  flg = option_handle() 
+  #コマンドライン引数
+  parser = argparse.ArgumentParser(description='Import music track for spotify.')
+  parser.add_argument('all', help='Import all previous tracks.', nargs="?", default='')
+  args = parser.parse_args()
 
   value = read_auth_info() # Read clientID,Client Secret
   username = value[0]
@@ -31,13 +34,13 @@ def main():
   if DEBUG:
     #sandbox
     exit()
-  #AlbumIDからTrackID(複数)を取得してその数分プレイリストに突っ込む
-  if flg == "":
-    album_lists = get_new_album_lists(spotify.new_releases(country='JP'))
-    make_play_list(username,spotify,date,get_track_id_from_album_lists(album_lists,spotify))
-  if flg == "all":
+  if args == "all":
     all_track_list = get_all_track_id_list()
     make_play_list(username,spotify,"All_New_Track",all_track_list)
+  else:
+    #AlbumIDからTrackID(複数)を取得してその数分プレイリストに突っ込む
+    album_lists = get_new_album_lists(spotify.new_releases(country='JP'))
+    make_play_list(username,spotify,date,get_track_id_from_album_lists(album_lists,spotify))
 
 #AlbumIDからTrackID(Fileから取得したTrackIDが属するAlbumID内の全てのTrackIDを取得)
 def get_track_id_from_album_lists(album_list_from_trackid,spotify):
@@ -63,14 +66,6 @@ def create_log(track_list):
   with open('data/out/log', mode = 'a') as f:
     for track in track_list:
       f.write("spotify:track:" + track + "\r\n")
-
-#オプションの判定
-def option_handle():
-  args = sys.argv
-  if len(args) != 2:
-    return ""
-  if(args[1] == "all"):
-    return "all"
 
 def get_all_track_id_list():
   track_list = []
