@@ -8,6 +8,20 @@ import os
 import sys
 import click
 
+value =''
+username =''
+client_id =''
+client_secret = ''
+redirect_uri =''
+client_credentials_manager = ''
+spotify = ''
+scope = 'playlist-modify-public'
+token = ''
+spotify = ''
+date = ''
+date = ''
+option = ''
+
 def main():
   #デバッグ
   DEBUG = os.getenv("DEBUG", None) is not None
@@ -19,7 +33,6 @@ def main():
   redirect_uri = 'http://localhost'
   client_credentials_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
   spotify = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-  scope = 'playlist-modify-public'
   token = util.prompt_for_user_token(username,scope, client_id=client_id,client_secret=client_secret,redirect_uri=redirect_uri)
   spotify = spotipy.Spotify(auth = token)
 
@@ -69,10 +82,14 @@ def option_handle():
 
 @option_handle.command('imp')
 def sub_new_track_import():
-  return "imp"
+  """Import new week track"""
+  #AlbumIDからTrackID(複数)を取得してその数分プレイリストに突っ込む
+  album_lists = get_new_album_lists(spotify.new_releases(country='JP'))
+  make_play_list(username,spotify,date,get_track_id_from_album_lists(album_lists,spotify))
 
 @option_handle.command('all')
 def sub_all_new_track_import():
+  """Import everything you have imported so far."""
   return "all"
 
 def get_all_track_id_list():
